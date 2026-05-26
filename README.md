@@ -59,9 +59,8 @@ lives in `app/src/main/java/com/example/daycounter/MainActivity.kt`:
   scope doesn't justify the ceremony.
 - **`SharedPreferences`** as the only persistent store (one ISO date
   string). DataStore would be more code than the whole feature.
-- **No backwards-compat shims** below `minSdk = 26`. Dynamic color
-  gracefully falls back to the default `Material 3` palette on
-  Android 11 and below.
+- **Android 16 only, no backwards-compat shims.** Dynamic color is
+  unconditional.
 
 ### Testing
 
