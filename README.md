@@ -2,6 +2,7 @@
 
 [![API](https://img.shields.io/badge/API-36-brightgreen.svg?style=flat-square)](https://source.android.com/docs/setup/about/build-numbers)
 [![Kotlin](https://img.shields.io/badge/Kotlin-Compose-7f52ff.svg?style=flat-square)](https://www.jetbrains.com/kotlin/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](https://opensource.org/licenses/MIT)
 
 A tiny Android app that counts the days since a user-chosen start date.
 One screen, one number.
@@ -104,5 +105,4 @@ the rule trade-off.
 
 ## License
 
-No license file yet. Treat the code as "all rights reserved" until
-one is added.
+MIT — see [`LICENSE`](LICENSE).
