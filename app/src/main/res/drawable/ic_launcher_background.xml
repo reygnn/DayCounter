@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+    <!-- Base fill (Material Blue 900) -->
+    <path
+        android:pathData="M0,0 L108,0 L108,108 L0,108 Z"
+        android:fillColor="#0D47A1"/>
+
+    <!-- Top half-tone (Material Blue 800 at ~55%) for a subtle highlight -->
+    <path
+        android:pathData="M0,0 L108,0 L108,54 L0,54 Z"
+        android:fillColor="#1565C0"
+        android:fillAlpha="0.55"/>
+
+</vector>

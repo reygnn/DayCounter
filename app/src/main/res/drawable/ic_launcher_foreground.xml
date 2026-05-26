@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+    <!--
+        Foreground for the adaptive icon. Content sits inside the 66dp
+        safe-zone circle (radius 33 from center) — the ring at r=26 plus
+        the marker dots stay clear of the launcher mask.
+    -->
+
+    <!-- Ring track (full circle, translucent) -->
+    <path
+        android:pathData="M 28,54 A 26,26 0 1,1 80,54 A 26,26 0 1,1 28,54 Z"
+        android:strokeColor="#FFFFFF"
+        android:strokeAlpha="0.25"
+        android:strokeWidth="6"/>
+
+    <!-- Progress arc: 270° clockwise from 12 o'clock to 9 o'clock -->
+    <path
+        android:pathData="M 54,28 A 26,26 0 1,1 28,54"
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="6"
+        android:strokeLineCap="round"/>
+
+    <!-- Start marker dot at 12 o'clock -->
+    <path
+        android:pathData="M 50,28 A 4,4 0 1,0 58,28 A 4,4 0 1,0 50,28 Z"
+        android:fillColor="#FFFFFF"/>
+
+    <!-- "Today" marker dot at 9 o'clock -->
+    <path
+        android:pathData="M 22,54 A 6,6 0 1,0 34,54 A 6,6 0 1,0 22,54 Z"
+        android:fillColor="#FFFFFF"/>
+
+</vector>
