@@ -22,6 +22,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import java.time.Clock
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneOffset
@@ -41,7 +42,10 @@ data class DayCounterUiState(
     val days: Long = 0,
 )
 
-class DayCounterViewModel(application: Application) : AndroidViewModel(application) {
+class DayCounterViewModel @JvmOverloads constructor(
+    application: Application,
+    private val clock: Clock = Clock.systemDefaultZone(),
+) : AndroidViewModel(application) {
 
     companion object {
         private const val PREFS_NAME = "day_counter_prefs"
@@ -64,11 +68,11 @@ class DayCounterViewModel(application: Application) : AndroidViewModel(applicati
 
     private fun getStartDate(): LocalDate {
         val stored = prefs.getString(KEY_START_DATE, null)
-        return if (stored != null) LocalDate.parse(stored) else LocalDate.now()
+        return if (stored != null) LocalDate.parse(stored) else LocalDate.now(clock)
     }
 
     private fun calculateState(): DayCounterUiState {
-        val today = LocalDate.now()
+        val today = LocalDate.now(clock)
         val start = getStartDate()
         val totalDays = ChronoUnit.DAYS.between(start, today)
 
