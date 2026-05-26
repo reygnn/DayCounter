@@ -12,8 +12,8 @@ android {
         applicationId = "com.example.daycounter"
         minSdk = 36
         targetSdk = 36
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = 17
+        versionName = "0.9"
     }
 
     buildTypes {
