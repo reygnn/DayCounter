@@ -5,11 +5,11 @@ plugins {
 }
 
 android {
-    namespace = "com.example.daycounter"
+    namespace = "com.github.reygnn.unbroken"
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.example.daycounter"
+        applicationId = "com.github.reygnn.unbroken"
         minSdk = 36
         targetSdk = 36
         versionCode = 17

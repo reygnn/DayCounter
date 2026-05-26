@@ -13,5 +13,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "DayCounter"
+rootProject.name = "Unbroken"
 include(":app")

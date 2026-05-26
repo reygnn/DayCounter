@@ -1,4 +1,4 @@
-package com.example.daycounter
+package com.github.reygnn.unbroken
 
 import android.app.Application
 import android.content.Context
@@ -32,7 +32,7 @@ import java.util.Locale
 
 // ── ViewModel ────────────────────────────────────────────────────────────────
 
-data class DayCounterUiState(
+data class UnbrokenUiState(
     val totalDays: Long = 0,
     val startDate: LocalDate = LocalDate.now(),
     val today: LocalDate = LocalDate.now(),
@@ -42,20 +42,20 @@ data class DayCounterUiState(
     val days: Long = 0,
 )
 
-class DayCounterViewModel @JvmOverloads constructor(
+class UnbrokenViewModel @JvmOverloads constructor(
     application: Application,
     private val clock: Clock = Clock.systemDefaultZone(),
 ) : AndroidViewModel(application) {
 
     companion object {
-        private const val PREFS_NAME = "day_counter_prefs"
+        private const val PREFS_NAME = "unbroken_prefs"
         private const val KEY_START_DATE = "start_date"
     }
 
     private val prefs = application.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
 
     private val _uiState = MutableStateFlow(calculateState())
-    val uiState: StateFlow<DayCounterUiState> = _uiState.asStateFlow()
+    val uiState: StateFlow<UnbrokenUiState> = _uiState.asStateFlow()
 
     fun refresh() {
         _uiState.value = calculateState()
@@ -71,7 +71,7 @@ class DayCounterViewModel @JvmOverloads constructor(
         return if (stored != null) LocalDate.parse(stored) else LocalDate.now(clock)
     }
 
-    private fun calculateState(): DayCounterUiState {
+    private fun calculateState(): UnbrokenUiState {
         val today = LocalDate.now(clock)
         val start = getStartDate()
         val totalDays = ChronoUnit.DAYS.between(start, today)
@@ -86,7 +86,7 @@ class DayCounterViewModel @JvmOverloads constructor(
         val weeks = remainingDays / 7
         val days = remainingDays % 7
 
-        return DayCounterUiState(
+        return UnbrokenUiState(
             totalDays = totalDays,
             startDate = start,
             today = today,
@@ -105,12 +105,12 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            DayCounterTheme {
+            UnbrokenTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    DayCounterScreen()
+                    UnbrokenScreen()
                 }
             }
         }
@@ -120,7 +120,7 @@ class MainActivity : ComponentActivity() {
 // ── Theme ────────────────────────────────────────────────────────────────────
 
 @Composable
-fun DayCounterTheme(
+fun UnbrokenTheme(
     darkTheme: Boolean = androidx.compose.foundation.isSystemInDarkTheme(),
     content: @Composable () -> Unit
 ) {
@@ -139,7 +139,7 @@ fun DayCounterTheme(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DayCounterScreen(viewModel: DayCounterViewModel = viewModel()) {
+fun UnbrokenScreen(viewModel: UnbrokenViewModel = viewModel()) {
     val state by viewModel.uiState.collectAsState()
     val dateFormatter = remember {
         DateTimeFormatter.ofPattern("dd. MMMM yyyy", Locale.GERMAN)
@@ -149,7 +149,7 @@ fun DayCounterScreen(viewModel: DayCounterViewModel = viewModel()) {
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
-                title = { Text("Tagezähler") },
+                title = { Text("Unbroken") },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primaryContainer,
                     titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer

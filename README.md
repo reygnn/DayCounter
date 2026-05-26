@@ -1,4 +1,4 @@
-# DayCounter
+# Unbroken
 
 [![API](https://img.shields.io/badge/API-36-brightgreen.svg?style=flat-square)](https://source.android.com/docs/setup/about/build-numbers)
 [![Kotlin](https://img.shields.io/badge/Kotlin-Compose-7f52ff.svg?style=flat-square)](https://www.jetbrains.com/kotlin/)
@@ -9,7 +9,7 @@ One screen, one number.
 
 ## What it is
 
-DayCounter shows the day count since whatever date you pick. The big
+Unbroken shows the day count since whatever date you pick. The big
 number is the total; below it, the same span is broken out as
 `years / months / weeks / days` for context. Tap the date to change it;
 default is today.
@@ -44,13 +44,13 @@ project small enough to ship in one session.
 ## Architecture & Tech Stack
 
 Single Gradle module, single Activity, single file. The entire app
-lives in `app/src/main/java/com/example/daycounter/MainActivity.kt`:
+lives in `app/src/main/java/com/github/reygnn/unbroken/MainActivity.kt`:
 
-- `DayCounterUiState` — immutable snapshot for the UI.
-- `DayCounterViewModel` (an `AndroidViewModel`) — date math + prefs I/O.
+- `UnbrokenUiState` — immutable snapshot for the UI.
+- `UnbrokenViewModel` (an `AndroidViewModel`) — date math + prefs I/O.
 - `MainActivity` — Compose entry point.
-- `DayCounterTheme` — Material 3 wrapper.
-- `DayCounterScreen` + `StartDatePickerDialog` — the UI.
+- `UnbrokenTheme` — Material 3 wrapper.
+- `UnbrokenScreen` + `StartDatePickerDialog` — the UI.
 
 ### Stack
 
@@ -66,20 +66,20 @@ lives in `app/src/main/java/com/example/daycounter/MainActivity.kt`:
 ### Testing
 
 JVM unit tests via Robolectric 4.16.1 (needed for an in-memory
-`SharedPreferences`). `DayCounterViewModelTest` covers the persistence
+`SharedPreferences`). `UnbrokenViewModelTest` covers the persistence
 round-trip, the `Clock`-injected "today" boundary cases, and the
 `years / months / weeks / days` breakdown across leap-year and
 month-boundary spans.
 
 Conventions, dependency pins, and the rationale for the Robolectric
 choice live in
-[`TESTING_CONVENTIONS.kt`](app/src/test/java/com/example/daycounter/TESTING_CONVENTIONS.kt).
+[`TESTING_CONVENTIONS.kt`](app/src/test/java/com/github/reygnn/unbroken/TESTING_CONVENTIONS.kt).
 
 ## Building
 
 ```bash
-git clone git@github.com:reygnn/DayCounter.git
-cd DayCounter
+git clone git@github.com:reygnn/Unbroken.git
+cd Unbroken
 ./gradlew assembleDebug         # debug APK
 ./gradlew test                  # JVM unit tests (none yet — see above)
 ./gradlew assembleRelease       # release APK (ProGuard enabled)
@@ -93,7 +93,7 @@ Gradle 8.13 is bundled via the wrapper.
   architectural rules. Read this first before any code change.
 - [`WHY_CLAUDE.md`](WHY_CLAUDE.md) — collaboration rationale: why
   Claude is in the loop and why branches are still sacred.
-- [`TESTING_CONVENTIONS.kt`](app/src/test/java/com/example/daycounter/TESTING_CONVENTIONS.kt)
+- [`TESTING_CONVENTIONS.kt`](app/src/test/java/com/github/reygnn/unbroken/TESTING_CONVENTIONS.kt)
   — testing conventions for when the first test lands.
 
 ## Contributing

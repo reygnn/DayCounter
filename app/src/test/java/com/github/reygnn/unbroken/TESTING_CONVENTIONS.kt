@@ -1,11 +1,11 @@
-package com.example.daycounter
+package com.github.reygnn.unbroken
 
 /**
  * ============================================================================
  * STARTING POINT
  * ============================================================================
  *
- * One test file exists: `DayCounterViewModelTest` — JVM tests via
+ * One test file exists: `UnbrokenViewModelTest` — JVM tests via
  * Robolectric 4.16.1 (needed for in-memory `SharedPreferences`).
  * Conventions in this file are what's actually applied there; the rest
  * is forward-looking guidance for when the surface grows.
@@ -45,7 +45,7 @@ package com.example.daycounter
  *
  *   @Test
  *   fun `my test`() = runTest {       // top-level runTest
- *       val vm = DayCounterViewModel(application)
+ *       val vm = UnbrokenViewModel(application)
  *       vm.refresh()
  *       advanceUntilIdle()
  *       // assert on vm.uiState.value
@@ -54,7 +54,7 @@ package com.example.daycounter
  * `MainDispatcherRule` is a thin JUnit4 rule that calls `Dispatchers.setMain`
  * with a `TestDispatcher` in `before` and `Dispatchers.resetMain` in `after`.
  * Standard kotlinx-coroutines-test boilerplate — drop it into
- * `app/src/test/java/com/example/daycounter/rule/MainDispatcherRule.kt` when
+ * `app/src/test/java/com/github/reygnn/unbroken/rule/MainDispatcherRule.kt` when
  * the first test that needs Main lands.
  *
  * RULES:
@@ -65,7 +65,7 @@ package com.example.daycounter
  *    manually in `@Before` if the rule is present.
  * 3. Top-level `runTest`: use `= runTest { }`, not `= testScope.runTest { }`.
  *
- * Why this matters even for DayCounter: `DayCounterViewModel` exposes a
+ * Why this matters even for Unbroken: `UnbrokenViewModel` exposes a
  * `StateFlow`. The moment a test wants to observe state transitions over
  * time (`refresh()` after a clock advance, multiple `setStartDate` calls)
  * the dispatcher rules above kick in. Don't skip the rule for "simple"
@@ -118,13 +118,13 @@ package com.example.daycounter
  * ANDROIDVIEWMODEL + SHAREDPREFERENCES — WHAT WE PICKED
  * ============================================================================
  *
- * `DayCounterViewModel` extends `AndroidViewModel(application)` and calls
+ * `UnbrokenViewModel` extends `AndroidViewModel(application)` and calls
  * `application.getSharedPreferences(...)` directly. Both `Application`
  * and `SharedPreferences` are Android types, so a JVM-only test needs
  * one of: Robolectric (real shims), MockK (mock the prefs surface), or
  * a refactor that extracts the persistence behind an interface.
  *
- * The project picked **Robolectric** for `DayCounterViewModelTest`:
+ * The project picked **Robolectric** for `UnbrokenViewModelTest`:
  *
  * - `ApplicationProvider.getApplicationContext()` returns a real-ish
  *   Application backed by Robolectric. `getSharedPreferences(...)`
@@ -159,7 +159,7 @@ package com.example.daycounter
  * depends on "today" against a moving target makes the test flaky on
  * its own. The project applies:
  *
- *   class DayCounterViewModel @JvmOverloads constructor(
+ *   class UnbrokenViewModel @JvmOverloads constructor(
  *       application: Application,
  *       private val clock: Clock = Clock.systemDefaultZone(),
  *   ) : AndroidViewModel(application)
