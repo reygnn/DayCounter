@@ -23,6 +23,10 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            // Personal-use app: sign the release APK with the debug key
+            // so it installs without a separate keystore. Replace with a
+            // real signingConfig before publishing to a store.
+            signingConfig = signingConfigs.getByName("debug")
         }
     }
 
