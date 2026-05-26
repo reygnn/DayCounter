@@ -149,7 +149,7 @@ fun UnbrokenScreen(viewModel: UnbrokenViewModel = viewModel()) {
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
-                title = { Text("Unbroken") },
+                title = { Text("Unbroken ${BuildConfig.VERSION_NAME}") },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primaryContainer,
                     titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer
