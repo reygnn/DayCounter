@@ -120,15 +120,9 @@ fun DayCounterTheme(
     darkTheme: Boolean = androidx.compose.foundation.isSystemInDarkTheme(),
     content: @Composable () -> Unit
 ) {
-    val colorScheme = when {
-        android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S -> {
-            val context = androidx.compose.ui.platform.LocalContext.current
-            if (darkTheme) dynamicDarkColorScheme(context)
-            else dynamicLightColorScheme(context)
-        }
-        darkTheme -> darkColorScheme()
-        else -> lightColorScheme()
-    }
+    val context = androidx.compose.ui.platform.LocalContext.current
+    val colorScheme = if (darkTheme) dynamicDarkColorScheme(context)
+    else dynamicLightColorScheme(context)
 
     MaterialTheme(
         colorScheme = colorScheme,

@@ -13,9 +13,11 @@ automatically at session start. Keep it short and actionable.
 
 ## Stack
 
-- Kotlin, **Jetpack Compose**, Material 3 (dynamic color on Android 12+)
-- Min SDK 26 / Target 36 / Compile 36
-- JDK 17
+- Kotlin, **Jetpack Compose**, Material 3 (dynamic color)
+- `minSdk = compileSdk = targetSdk = 36` — **Android 16 only, no
+  backwards-compat shims**
+- **JDK 21** to run Gradle (bytecode targets Java 17 via
+  `sourceCompatibility` / `jvmTarget`)
 - Single Gradle module (`:app`), single Activity (`MainActivity`)
 - State: one `AndroidViewModel` exposing `StateFlow<DayCounterUiState>`
 - Persistence: `SharedPreferences` (one string key: `start_date` as ISO
