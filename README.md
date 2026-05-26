@@ -65,15 +65,15 @@ lives in `app/src/main/java/com/example/daycounter/MainActivity.kt`:
 
 ### Testing
 
-None yet. The feature surface is one number, one date input, one
-button — small enough that a hand-verify after each change beats the
-overhead of a JVM-test scaffolding for a single `AndroidViewModel`.
+JVM unit tests via Robolectric 4.16.1 (needed for an in-memory
+`SharedPreferences`). `DayCounterViewModelTest` covers the persistence
+round-trip, the `Clock`-injected "today" boundary cases, and the
+`years / months / weeks / days` breakdown across leap-year and
+month-boundary spans.
 
-When tests get added, the conventions are pre-baked in
-[`TESTING_CONVENTIONS.kt`](app/src/test/java/com/example/daycounter/TESTING_CONVENTIONS.kt):
-the dispatcher rule, MockK over Mockito, no `mock` prefix, and three
-honest options for testing the `AndroidViewModel + SharedPreferences`
-combo without dragging Robolectric in.
+Conventions, dependency pins, and the rationale for the Robolectric
+choice live in
+[`TESTING_CONVENTIONS.kt`](app/src/test/java/com/example/daycounter/TESTING_CONVENTIONS.kt).
 
 ## Building
 

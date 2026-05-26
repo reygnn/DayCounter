@@ -23,8 +23,11 @@ automatically at session start. Keep it short and actionable.
 - Persistence: `SharedPreferences` (one string key: `start_date` as ISO
   `LocalDate`). Storage need is one tiny value with no async pressure — a
   `DataStore` migration would be more code than the whole feature.
-- Tests: **none yet.** Conventions for when they get added live in
-  `app/src/test/java/com/example/daycounter/TESTING_CONVENTIONS.kt`.
+- Tests: JVM unit tests under **Robolectric 4.16.1** (in-memory
+  `SharedPreferences`); `Clock` is injected for deterministic "today".
+  Conventions in `app/src/test/java/com/example/daycounter/TESTING_CONVENTIONS.kt`.
+  **Do not downgrade Robolectric below 4.16.1** — earlier versions don't
+  ship the Android-16 SDK JAR.
 
 ## Build & test
 

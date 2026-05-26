@@ -2,27 +2,32 @@ package com.example.daycounter
 
 /**
  * ============================================================================
- * NO TESTS YET — READ THIS FIRST WHEN YOU WRITE THE FIRST ONE
+ * STARTING POINT
  * ============================================================================
  *
- * As of project setup, DayCounter ships without tests. The whole app is one
- * ViewModel and one Compose tree; for the current scope, an explicit
- * "Aktualisieren" button and a single date input cover the realistic
- * regression surface.
+ * One test file exists: `DayCounterViewModelTest` — JVM tests via
+ * Robolectric 4.16.1 (needed for in-memory `SharedPreferences`).
+ * Conventions in this file are what's actually applied there; the rest
+ * is forward-looking guidance for when the surface grows.
  *
- * This file exists so that *when* tests get added, the conventions are
- * fixed in advance — not bolted on after the suite has already drifted.
- * The patterns below are the ones that proved load-bearing in the
- * Kolibri Launcher project (this app's sibling); they are pared down to
- * what's actually relevant here.
- *
- * Recommended dependencies for the first test (`app/build.gradle.kts`):
+ * Test dependencies (`app/build.gradle.kts`):
  *
  *     testImplementation("junit:junit:4.13.2")
- *     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.8.1")
- *     testImplementation("io.mockk:mockk:1.13.13")
- *     testImplementation("app.cash.turbine:turbine:1.1.0")   // only if collecting flows
+ *     testImplementation("org.robolectric:robolectric:4.16.1")
+ *     testImplementation("androidx.test:core-ktx:1.7.0")
+ *     testImplementation("androidx.test.ext:junit-ktx:1.3.0")
+ *     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.10.2")
  *
+ * Robolectric requires JDK 21 and matched-SDK Android JARs; 4.16.1 is
+ * the first version with proper SDK 36 (Android 16) support. **Do not
+ * downgrade below 4.16.1.**
+ *
+ * `android.testOptions.unitTests.isIncludeAndroidResources = true` in
+ * `build.gradle.kts` is required — without it, Robolectric can't find
+ * the merged-resources AAR layout and aborts at boot.
+ *
+ * MockK / Turbine are not pulled in yet. Add them when the first test
+ * that actually needs mocking or flow collection over time lands.
  * ============================================================================
  */
 
@@ -110,46 +115,38 @@ package com.example.daycounter
 
 /**
  * ============================================================================
- * ANDROIDVIEWMODEL + SHAREDPREFERENCES — THE HONEST OPTIONS
+ * ANDROIDVIEWMODEL + SHAREDPREFERENCES — WHAT WE PICKED
  * ============================================================================
  *
  * `DayCounterViewModel` extends `AndroidViewModel(application)` and calls
- * `application.getSharedPreferences(...)` directly. That's the simplest
- * production code, but it makes JVM-only testing awkward — both
- * `Application` and `SharedPreferences` are Android types.
+ * `application.getSharedPreferences(...)` directly. Both `Application`
+ * and `SharedPreferences` are Android types, so a JVM-only test needs
+ * one of: Robolectric (real shims), MockK (mock the prefs surface), or
+ * a refactor that extracts the persistence behind an interface.
  *
- * Three honest options, in order of cost:
+ * The project picked **Robolectric** for `DayCounterViewModelTest`:
  *
- * 1) Don't unit-test the ViewModel yet.
- *    For the current scope, this is fine. The feature surface is small,
- *    the math is `ChronoUnit.between`, and the UI is hand-verified after
- *    every change. Add tests when the surface grows.
+ * - `ApplicationProvider.getApplicationContext()` returns a real-ish
+ *   Application backed by Robolectric. `getSharedPreferences(...)`
+ *   returns an in-memory implementation that honours the full contract
+ *   (`edit().putString().apply()`, the lot) — no editor-chain mocking,
+ *   no fake `Application`.
+ * - Boot cost is ~4s for the first test, ~30-50ms per test after.
+ *   Acceptable at this project size.
+ * - Test isolation is per-`@Before clearPrefs()`, not per-class. Robolectric
+ *   shares the in-memory prefs file across tests inside the same class
+ *   unless you clear it.
  *
- * 2) Mock `SharedPreferences` with MockK.
- *    Works for pure-stub scenarios. `prefs.edit()` returns an `Editor`,
- *    which needs its own stubbing — slightly clunky but doable. Example:
+ * **Reach for MockK or a `PrefsStore` extraction instead** if:
+ * - the test boot cost ever stops being acceptable, or
+ * - the persistence surface grows beyond one key (extracting a
+ *   `PrefsStore` interface makes the VM a plain `ViewModel`, drops the
+ *   Robolectric requirement, and centralises the persistence shape).
  *
- *      val prefs = mockk<SharedPreferences>(relaxed = true)
- *      val editor = mockk<SharedPreferences.Editor>(relaxed = true)
- *      every { prefs.edit() } returns editor
- *      every { editor.putString(any(), any()) } returns editor
- *
- *    Then inject a fake `Application` whose `getSharedPreferences`
- *    returns this mock.
- *
- * 3) Extract a `PrefsStore` interface.
- *    Refactor `DayCounterViewModel` to take a small interface in its
- *    constructor (e.g. `interface PrefsStore { fun getStartDate(): LocalDate?; fun setStartDate(d: LocalDate) }`)
- *    and the Android-backed impl wraps `SharedPreferences`. The
- *    ViewModel becomes a plain `ViewModel`, not an `AndroidViewModel`,
- *    and tests pass a fake `PrefsStore`. This is the right move *when*
- *    the persistence surface grows beyond one key — not before.
- *
- * Don't reach for Robolectric for this. Robolectric works for
- * `SharedPreferences` (it has an in-memory shim), but the boot cost
- * (~9s for the first test class) is not worth it for a single-VM
- * project. Either option (2) or (3) keeps the test on the JVM at
- * full speed.
+ * For now the Robolectric route is the lowest-friction path that
+ * doesn't sneak production-incompatible behavior into the test (the
+ * editor-chain mock has bitten several teams who got the `apply()` vs
+ * `commit()` interaction wrong).
  * ============================================================================
  */
 
@@ -160,22 +157,26 @@ package com.example.daycounter
  *
  * `LocalDate.now()` reads the system clock — testing anything that
  * depends on "today" against a moving target makes the test flaky on
- * its own. Two options:
+ * its own. The project applies:
  *
- * 1) Pass a `java.time.Clock` into the ViewModel. Default to
- *    `Clock.systemDefaultZone()` in production; pass `Clock.fixed(...)`
- *    in the test. `LocalDate.now(clock)` does the right thing.
+ *   class DayCounterViewModel @JvmOverloads constructor(
+ *       application: Application,
+ *       private val clock: Clock = Clock.systemDefaultZone(),
+ *   ) : AndroidViewModel(application)
  *
- *    This is the right pattern *when* the first time-dependent test
- *    lands. Until then, the current `LocalDate.now()` calls are fine.
+ * `@JvmOverloads` is load-bearing: it generates the no-clock
+ * `(Application)` constructor that Android's reflective ViewModel
+ * factory looks for at runtime, while tests use the two-arg
+ * `(Application, Clock)` form with `Clock.fixed(instant, zone)`.
  *
- * 2) For one-shot tests that only care about the *delta*, capture
- *    `vm.uiState.value.today` and assert relative to it. No clock
- *    abstraction needed — the math just has to be self-consistent
- *    within a single test run.
+ * Same pattern applies any time something depends on "now" — a future
+ * notification scheduler, a streak-day-rollover handler, etc. Take
+ * `Clock` in the constructor; never reach for `LocalDate.now()`,
+ * `Instant.now()`, or `System.currentTimeMillis()` inside a class
+ * that's worth testing in isolation.
  *
- * `testScheduler.currentTime` from `runTest` is NOT a substitute for
- * a real clock. It's virtual coroutine time, not wall-clock time, and
- * `LocalDate.now()` ignores it entirely.
+ * `testScheduler.currentTime` from `runTest` is NOT a substitute. It's
+ * virtual coroutine time, not wall-clock time, and `LocalDate.now()`
+ * ignores it entirely.
  * ============================================================================
  */
